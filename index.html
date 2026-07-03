@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>計畫書 AI 使用特徵分析</title>
+<meta name="description" content="貼上計畫書文字,從語氣、架構、用詞三大面向分析AI寫作特徵,並以單位脈絡連貫性作為人為撰寫佐證。">
+<style>
+  :root{
+    --red:#B4372C; --red-dark:#8C2B22; --amber:#B7791F; --orange:#C05621;
+    --blue:#2F5D7C; --ink:#202124; --muted:#8A857C; --paper:#FCFCFA;
+    --line:#E4E1DA; --serif:"Noto Serif TC","PMingLiU","Songti TC",serif;
+    --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans)}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 18px 80px}
+  header{text-align:center;margin-bottom:26px}
+  .eyebrow{font-size:12px;letter-spacing:6px;color:var(--red-dark);margin-bottom:6px}
+  h1{font-family:var(--serif);font-size:30px;font-weight:700;letter-spacing:2px;margin:0}
+  .rule{margin-top:14px}
+  .rule .thick{height:3px;background:var(--red)}
+  .rule .thin{height:1px;background:var(--red);margin-top:3px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:6px;padding:16px}
+  label{font-size:13px;color:#5F5B54;display:block;margin-bottom:8px}
+  textarea{width:100%;min-height:200px;resize:vertical;border:1px solid #D8D4CC;border-radius:4px;
+    padding:12px;font-size:15px;line-height:1.8;font-family:var(--sans);outline:none}
+  textarea:focus,input[type=text]:focus{border-color:var(--red)}
+  input[type=text]{width:100%;border:1px solid #D8D4CC;border-radius:4px;padding:10px 12px;
+    font-size:14px;font-family:var(--sans);outline:none}
+  .field{margin-top:14px}
+  .fieldnote{font-size:12px;color:var(--muted);margin-top:5px}
+  .bar{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+  button.go{background:var(--red);color:#fff;border:none;border-radius:4px;padding:10px 26px;
+    font-size:15px;letter-spacing:3px;cursor:pointer;font-family:var(--serif)}
+  button.go:disabled{background:#D8D4CC;cursor:default}
+  button.go:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .count{font-size:12px;color:var(--muted)}
+  .clear{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;text-decoration:underline}
+  .verdict{display:flex;gap:20px;margin-top:28px;align-items:center;flex-wrap:wrap}
+  .stamp{width:128px;height:128px;flex-shrink:0;transform:rotate(-6deg);border-radius:10px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-family:var(--serif);background:rgba(255,255,255,.6);box-shadow:0 1px 0 rgba(0,0,0,.04)}
+  .stamp .t1{font-size:15px;font-weight:700;letter-spacing:2px}
+  .stamp .t2{font-size:26px;font-weight:900;letter-spacing:1px;margin:2px 0}
+  .stamp .t3{font-size:13px;letter-spacing:1px}
+  .vdesc{flex:1;min-width:240px}
+  .vdesc p{font-size:15px;line-height:1.9;margin:0}
+  .vmeta{font-size:12px;color:var(--muted);margin-top:8px}
+  h2{font-family:var(--serif);font-size:19px;border-left:4px solid var(--red);padding-left:10px;margin:30px 0 14px}
+  .cat{font-family:var(--serif);font-size:15px;font-weight:700;letter-spacing:2px;color:#4A463F;
+    margin:18px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+  .sig{margin-bottom:13px}
+  .sig .head{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px}
+  .sig .name{font-weight:500}
+  .sig .score{font-weight:700}
+  .track{height:7px;background:#EFEDE7;border-radius:4px;overflow:hidden}
+  .fill{height:100%;transition:width .5s}
+  .sig .note{font-size:12px;color:var(--muted);margin-top:3px}
+  .hint{font-size:12px;color:var(--muted);margin:-8px 0 14px}
+  .evidence{border:1px solid #C9D8E2;background:#F3F7FA;border-radius:6px;padding:14px 16px;margin-top:16px}
+  .evidence .h{font-family:var(--serif);font-weight:700;color:var(--blue);font-size:15px;margin-bottom:6px}
+  .evidence p{font-size:13.5px;line-height:1.9;margin:0;color:#3A4A55}
+  .chip{display:inline-block;background:#E1EBF2;color:var(--blue);border-radius:3px;
+    padding:1px 8px;font-size:12.5px;margin:2px 4px 2px 0}
+  .para{border-left-width:4px;border-left-style:solid;border-radius:0 4px 4px 0;padding:10px 14px;margin-bottom:10px}
+  .para .tag{font-size:12px;font-weight:700;margin-bottom:4px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .badge{font-size:11px;font-weight:700;color:var(--blue);background:#E1EBF2;border-radius:3px;padding:1px 7px}
+  .para .body{font-size:14.5px;line-height:1.9}
+  mark{background:#F6D8D3;color:var(--red-dark);padding:0 2px;border-radius:2px}
+  mark.unit{background:#D9E7F0;color:var(--blue)}
+  .notice{margin-top:30px;border:1px dashed var(--red);border-radius:6px;padding:14px 16px;background:#FFFDFB}
+  .notice .h{font-family:var(--serif);font-weight:700;color:var(--red-dark);margin-bottom:6px;font-size:15px}
+  .notice p{font-size:13.5px;line-height:2;margin:0;color:#4A463F}
+  .warn{margin-top:20px;color:var(--red);font-size:14px}
+  .drop{border:2px dashed #C9C4BA;border-radius:6px;padding:18px 14px;text-align:center;
+    cursor:pointer;margin-bottom:14px;background:#FBFAF7;transition:border-color .2s,background .2s}
+  .drop:hover,.drop.over{border-color:var(--red);background:#FDF6F4}
+  .drop .big{font-size:15px;font-weight:500}
+  .drop .small{font-size:12px;color:var(--muted);margin-top:4px}
+  .drop .status{font-size:13px;color:var(--blue);margin-top:6px;font-weight:500}
+  .drop .status.err{color:var(--red)}
+  footer{margin-top:44px;text-align:center;font-size:12px;color:var(--muted);letter-spacing:1px}
+  #results{display:none}
+  @media (prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">審 查 輔 助 工 具</div>
+    <h1>計畫書 AI 使用特徵分析</h1>
+    <div class="rule"><div class="thick"></div><div class="thin"></div></div>
+  </header>
+
+  <section class="card">
+    <div class="drop" id="drop" role="button" tabindex="0" aria-label="上傳文件檔案">
+      <div class="big">📄 拖曳檔案到這裡,或點擊選擇檔案</div>
+      <div class="small">支援 Word(.docx)、PDF、純文字(.txt / .md)。檔案僅在你的瀏覽器內解析,不會上傳。</div>
+      <div class="status" id="dropStatus"></div>
+      <input type="file" id="fileInput" accept=".docx,.pdf,.txt,.md" style="display:none">
+    </div>
+    <label for="src">或直接貼上計畫書全文/章節(建議 300 字以上,分析越長越準)</label>
+    <textarea id="src" placeholder="在此貼上文字……"></textarea>
+    <div class="field">
+      <label for="units">單位/專有名詞(選填,以逗號分隔)</label>
+      <input type="text" id="units" placeholder="例:社團法人○○協會, ○○社區發展計畫, 大甲區">
+      <div class="fieldnote">單位名稱、計畫名、在地地名若在全文連貫出現,屬人為撰寫的有力佐證,會據此扣減AI指數。「本會、本校、本中心」等自稱詞會自動偵測,不必填寫。</div>
+    </div>
+    <div class="bar">
+      <button class="go" id="goBtn" disabled>送 審</button>
+      <span class="count" id="charCount">0 字</span>
+      <button class="clear" id="clearBtn" style="display:none">清除重填</button>
+    </div>
+  </section>
+
+  <p class="warn" id="tooShort" style="display:none"></p>
+
+  <div id="results">
+    <section class="verdict">
+      <div class="stamp" id="stamp">
+        <div class="t1" id="st1"></div><div class="t2" id="st2"></div><div class="t3" id="st3"></div>
+      </div>
+      <div class="vdesc"><p id="vdesc"></p><div class="vmeta" id="vmeta"></div></div>
+    </section>
+
+    <div class="evidence" id="evidence" style="display:none">
+      <div class="h">人為撰寫佐證:單位脈絡連貫性</div>
+      <p id="evtext"></p>
+      <div id="evchips" style="margin-top:8px"></div>
+    </div>
+
+    <h2>一、特徵指標明細(語氣 / 架構 / 用詞)</h2>
+    <div id="signals"></div>
+
+    <h2>二、逐段風險標記</h2>
+    <p class="hint">紅色為AI典型用語,藍色為單位脈絡詞(人為佐證)。含單位脈絡的段落已自動降低風險評分。</p>
+    <div id="paras"></div>
+
+    <section class="notice">
+      <div class="h">審查附註(必讀)</div>
+      <p>本工具分析的是「AI寫作特徵」而非事實認定,任何工具都無法百分之百證明文字由AI產出。
+      公文體、行政慣用語本身即帶有制式特徵,可能推高分數;反之,經人工潤飾的AI文稿也可能降低分數。
+      單位脈絡連貫僅代表撰寫者熟悉該單位,不排除以AI為底稿再置入單位資訊的情形。
+      指數偏高時,建議以「要求補充具體事證、口頭答詢、追問執行細節」作為後續查證方式,不宜僅憑指數逕行認定。</p>
+    </section>
+  </div>
+
+  <footer>本工具於瀏覽器本機運算,貼上的文字不會上傳到任何伺服器。</footer>
+</div>
+
+<script>
+// ---------- 詞庫 ----------
+const BUZZWORDS=["賦能","打造","深化","優化","整合","推動","落實","多元","永續","韌性","量能","綜效",
+"系統性","全方位","一站式","生態系","數位轉型","核心價值","關鍵要素","至關重要","不可或缺",
+"扮演重要角色","奠定基礎","堅實基礎","攜手","共創","邁向","藍圖","里程碑","滾動式",
+"有效提升","大幅提升","顯著提升","全面提升","強化","精進","串聯","鏈結","效益最大化",
+"創造價值","激發","蓬勃發展","與時俱進","接軌國際","在地連結","培力","擴散","亮點"];
+const CONNECTORS=["此外","然而","因此","綜上所述","總而言之","值得注意的是","首先","其次","再者","最後",
+"同時","另一方面","換言之","總體而言","整體而言","由此可見","不僅如此","除此之外"];
+const TEMPLATES=[/透過[^。,,]{2,20}(以|來|進而)/g,/隨著[^。,,]{2,20}(的|之)(發展|演進|興起|普及)/g,
+/在[^。,,]{2,20}(的|之)(背景|趨勢|浪潮|時代)下/g,/不僅[^。]{2,25}更/g,/為(了)?[^。,,]{2,20},/g];
+// 自稱詞:人為視角證據
+const SELFREF=["本會","本校","本中心","本局","本處","本所","本署","本府","本館","本社",
+"本公司","本協會","本基金會","本工作室","本團隊","本單位","敝會","敝校","敝單位","敝公司"];
+// 語氣起伏詞:人味證據
+const TONEWORDS=["其實","確實","坦白","老實說","可惜","遺憾","期盼","盼能","亟需","深感","深知",
+"難得","畢竟","不得不","一路走來","這幾年","去年","前年","當時","曾經","印象深刻","感謝","辛苦"];
+
+// ---------- 工具 ----------
+const splitParas=t=>t.split(/\n+/).map(p=>p.trim()).filter(p=>p.length>=15);
+const splitSents=t=>t.split(/[。!?!?;;]/).map(s=>s.trim()).filter(s=>s.length>=4);
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+const cv=a=>{if(a.length<2)return 1;const m=a.reduce((x,y)=>x+y,0)/a.length;if(!m)return 1;
+  return Math.sqrt(a.reduce((x,y)=>x+(y-m)**2,0)/a.length)/m};
+const countM=(t,ws)=>ws.reduce((n,w)=>n+(t.split(w).length-1),0);
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+// ---------- 分析 ----------
+function analyze(text,unitTerms){
+  const paras=splitParas(text),sents=splitSents(text);
+  const len=text.replace(/\s/g,"").length;
+  if(len<100||sents.length<3)return{tooShort:true,len};
+  const per1k=n=>n/len*1000;
+
+  // === 用詞 ===
+  const sBuzz=clamp(per1k(countM(text,BUZZWORDS))*9);
+  const tmpl=TEMPLATES.reduce((n,re)=>n+(text.match(re)||[]).length,0);
+  const sTmpl=clamp(per1k(tmpl)*22);
+  const chars=text.replace(/[\s\p{P}]/gu,"");
+  const ttr=new Set(chars).size/Math.sqrt(chars.length||1);
+  const sTTR=clamp((7.2-ttr)*22);
+
+  // === 語氣 ===
+  const connStart=sents.filter(s=>CONNECTORS.some(c=>s.startsWith(c))).length;
+  const sConn=clamp(per1k(countM(text,CONNECTORS))*14+connStart/sents.length*160);
+  const selfHits=countM(text,SELFREF)+countM(text,unitTerms)*1.5;
+  const sSelf=clamp(72-per1k(selfHits)*11);   // 自稱/單位視角越少,AI特徵越高
+  const toneHits=countM(text,TONEWORDS)+(text.match(/[!!]/g)||[]).length;
+  const sTone=clamp(68-per1k(toneHits)*13);   // 語氣平板無起伏
+
+  // === 架構 ===
+  const sCV=clamp((0.62-cv(sents.map(s=>s.length)))*180+40);
+  const sPara=paras.length>=3?clamp((0.55-cv(paras.map(p=>p.length)))*150+42):45;
+  // 列點對稱度:列點行長度過度一致 + 恰好三項的清單
+  const bullets=text.split(/\n/).map(l=>l.trim())
+    .filter(l=>/^([一二三四五六七八九十]+[、.]|\([一二三四五六七八九十]+\)|[0-90-9]+[..、)]|[・•●\-*])/.test(l));
+  let sList=40;
+  if(bullets.length>=3){
+    const bcv=cv(bullets.map(b=>b.length));
+    sList=clamp((0.42-bcv)*190+46+(bullets.length%3===0?8:0));
+  }
+
+  // === 具體性 ===
+  const digits=(text.match(/[0-90-9]+/g)||[]).length;
+  const dates=(text.match(/[0-90-9]{2,4}\s*年|[0-90-9]{1,2}\s*月|民國/g)||[]).length;
+  const quotes=(text.match(/[「『][^」』]{1,25}[」』]/g)||[]).length;
+  const sSpec=clamp(78-(per1k(digits)*4+per1k(dates)*12+per1k(quotes)*8)*2.4);
+
+  const signals=[
+    {cat:"語氣",name:"制式連接詞",score:sConn,w:.11,note:"「此外、然而、綜上所述」等開頭句與連接詞比例"},
+    {cat:"語氣",name:"缺乏單位/個人視角",score:sSelf,w:.14,note:"「本會、敝單位」與單位名稱出現越少,越像脫離脈絡的生成文字"},
+    {cat:"語氣",name:"語氣平板無起伏",score:sTone,w:.09,note:"人寫的文字會有「其實、可惜、一路走來」等真實語氣,AI則四平八穩"},
+    {cat:"架構",name:"句長過度均勻",score:sCV,w:.09,note:"人寫的句子長短起伏大,AI傾向節奏一致"},
+    {cat:"架構",name:"段落過度工整",score:sPara,w:.07,note:"每段長度近乎相同是生成式排版的特徵"},
+    {cat:"架構",name:"列點過度對稱",score:sList,w:.08,note:"每個列點字數幾乎相同、清單恰為三的倍數,是AI排版慣性"},
+    {cat:"用詞",name:"空泛套話密度",score:sBuzz,w:.18,note:"「賦能、打造、深化」等常見AI用語的出現頻率"},
+    {cat:"用詞",name:"模板化句式",score:sTmpl,w:.10,note:"「透過…以…」「隨著…的發展」等排比套路"},
+    {cat:"用詞",name:"詞彙多樣性偏低",score:sTTR,w:.06,note:"AI偏好重複使用同一批安全詞彙"},
+    {cat:"具體性",name:"缺乏具體細節",score:sSpec,w:.08,note:"數據、日期、專有名詞越少,AI特徵越高"}];
+  let total=signals.reduce((a,s)=>a+s.score*s.w,0);
+
+  // === 單位脈絡連貫性(人為佐證,全域扣減) ===
+  const allUnitWords=[...new Set([...unitTerms,...SELFREF])];
+  const paraWithUnit=paras.filter(p=>allUnitWords.some(w=>p.includes(w))).length;
+  const coverage=paras.length?paraWithUnit/paras.length:0;   // 覆蓋幾成段落
+  const unitFound=allUnitWords.filter(w=>text.includes(w));
+  let deduction=0;
+  if(coverage>=0.25&&unitFound.length){
+    deduction=Math.round(Math.min(16,coverage*22+(unitTerms.filter(w=>text.includes(w)).length?4:0)));
+    total-=deduction;
+  }
+  total=clamp(total);
+  const spread=len<500?12:len<1500?9:6;
+
+  // === 逐段 ===
+  const paraResults=paras.map(p=>{
+    const pl=p.replace(/\s/g,"").length;
+    const hits=BUZZWORDS.filter(w=>p.includes(w));
+    const conns=CONNECTORS.filter(w=>p.includes(w));
+    const uhits=allUnitWords.filter(w=>p.includes(w));
+    const thits=TONEWORDS.filter(w=>p.includes(w));
+    const tm=TEMPLATES.reduce((n,re)=>n+(p.match(re)||[]).length,0);
+    const dg=(p.match(/[0-90-9]+/g)||[]).length;
+    let score=hits.length/pl*8000+conns.length/pl*10000+tm/pl*20000+Math.max(0,40-dg/pl*4000);
+    score-=uhits.length*9+thits.length*5;   // 單位脈絡與真實語氣扣減
+    return{text:p,score:clamp(score),hits:[...new Set([...hits,...conns])],
+      uhits:[...new Set(uhits)],hasUnit:uhits.length>0};
+  });
+  return{tooShort:false,total,spread,signals,paraResults,len,sentCount:sents.length,
+    coverage,unitFound,deduction};
+}
+
+const verdictOf=t=>
+  t>=72?{label:["AI特徵","高"],tone:"#B4372C",desc:"語氣、架構、用詞多項生成式特徵密集出現,建議要求說明或口頭答詢驗證。"}
+  :t>=55?{label:["AI特徵","偏高"],tone:"#C05621",desc:"具有明顯的AI寫作痕跡,可能為AI初稿加人工修改。"}
+  :t>=35?{label:["AI特徵","中等"],tone:"#B7791F",desc:"部分段落有制式化傾向,也可能是公文體的正常表現。"}
+  :{label:["AI特徵","低"],tone:"#2F5D7C",desc:"單位脈絡連貫、行文有真實語氣與具體細節,未見明顯生成痕跡。"};
+const riskOf=s=>s>=60?{t:"高",c:"#B4372C",bg:"#FBEEEC"}
+  :s>=38?{t:"中",c:"#B7791F",bg:"#FBF4E4"}:{t:"低",c:"#2F5D7C",bg:"#EDF3F7"};
+
+function highlight(text,hits,uhits){
+  let h=esc(text);
+  const mk=(ws,cls)=>{
+    if(!ws.length)return;
+    const re=new RegExp("("+ws.map(x=>esc(x).replace(/[.*+?^${}()|[\]\\]/g,"\\$&")).join("|")+")","g");
+    h=h.replace(re,cls?'<mark class="'+cls+'">$1</mark>':"<mark>$1</mark>");
+  };
+  mk(uhits,"unit");mk(hits.filter(w=>!uhits.some(u=>u.includes(w)||w.includes(u))),"");
+  return h;
+}
+
+// ---------- 檔案解析 ----------
+const loadScript=u=>new Promise((res,rej)=>{
+  if(document.querySelector('script[src="'+u+'"]'))return res();
+  const s=document.createElement("script");s.src=u;s.onload=res;
+  s.onerror=()=>rej(new Error("外部函式庫載入失敗,請檢查網路"));document.head.appendChild(s);
+});
+
+async function extractDocx(buf){
+  await loadScript("https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js");
+  const r=await window.mammoth.extractRawText({arrayBuffer:buf});
+  return r.value;
+}
+async function extractPdf(buf){
+  await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc=
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  const pdf=await window.pdfjsLib.getDocument({data:buf}).promise;
+  let out="";
+  for(let i=1;i<=pdf.numPages;i++){
+    const page=await pdf.getPage(i);
+    const tc=await page.getTextContent();
+    let line="";
+    tc.items.forEach(it=>{line+=it.str;if(it.hasEOL){out+=line+"\n";line="";}});
+    out+=line+"\n";
+  }
+  // PDF逐行斷開,把非句末的換行併回同段
+  return out.replace(/([^。!?!?::;;」』)\)])\n(?!\s*(?:[一二三四五六七八九十]+[、.]|\([一二三四五六七八九十]+\)|[0-90-9]+[..、)]|[・•●\-*]))/g,"$1");
+}
+
+async function handleFile(file){
+  const st=document.getElementById("dropStatus");
+  st.className="status";st.textContent="正在解析「"+file.name+"」……";
+  try{
+    const name=file.name.toLowerCase();
+    let text="";
+    if(name.endsWith(".txt")||name.endsWith(".md")){
+      text=await file.text();
+    }else if(name.endsWith(".docx")){
+      text=await extractDocx(await file.arrayBuffer());
+    }else if(name.endsWith(".pdf")){
+      text=await extractPdf(await file.arrayBuffer());
+    }else if(name.endsWith(".doc")){
+      throw new Error("舊版 .doc 格式無法解析,請先用 Word 另存為 .docx 再上傳");
+    }else{
+      throw new Error("不支援的檔案格式,請使用 .docx / .pdf / .txt");
+    }
+    text=text.trim();
+    const n=text.replace(/\s/g,"").length;
+    if(n<50)throw new Error("抽不出足夠文字("+n+" 字)。若是掃描版PDF(圖片無文字層),請改貼純文字");
+    src.value=text;
+    src.dispatchEvent(new Event("input"));
+    st.textContent="✓ 已載入「"+file.name+"」("+n+" 字),自動送審中";
+    goBtn.click();
+  }catch(e){
+    st.className="status err";st.textContent="✕ "+e.message;
+  }
+}
+
+// ---------- UI ----------
+const $=id=>document.getElementById(id);
+const src=$("src"),goBtn=$("goBtn"),clearBtn=$("clearBtn"),unitsInput=$("units");
+const drop=$("drop"),fileInput=$("fileInput");
+
+drop.addEventListener("click",()=>fileInput.click());
+drop.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();fileInput.click();}});
+fileInput.addEventListener("change",()=>{if(fileInput.files[0])handleFile(fileInput.files[0]);fileInput.value="";});
+["dragover","dragenter"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over");}));
+["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over");}));
+drop.addEventListener("drop",e=>{const f=e.dataTransfer.files[0];if(f)handleFile(f);});
+
+src.addEventListener("input",()=>{
+  $("charCount").textContent=src.value.replace(/\s/g,"").length+" 字";
+  goBtn.disabled=!src.value.trim();
+});
+clearBtn.addEventListener("click",()=>{
+  src.value="";unitsInput.value="";$("charCount").textContent="0 字";goBtn.disabled=true;
+  clearBtn.style.display="none";$("results").style.display="none";$("tooShort").style.display="none";
+  $("dropStatus").textContent="";$("dropStatus").className="status";
+});
+
+goBtn.addEventListener("click",()=>{
+  const unitTerms=unitsInput.value.split(/[,,、]/).map(s=>s.trim()).filter(s=>s.length>=2);
+  const r=analyze(src.value,unitTerms);
+  clearBtn.style.display="inline";
+  if(r.tooShort){
+    $("results").style.display="none";
+    const w=$("tooShort");w.style.display="block";
+    w.textContent="文字太短(目前 "+r.len+" 字),至少需要約 100 字與 3 個完整句子才能分析。";
+    return;
+  }
+  $("tooShort").style.display="none";
+  const v=verdictOf(r.total);
+  const stamp=$("stamp");
+  stamp.style.border="3.5px solid "+v.tone;stamp.style.color=v.tone;
+  $("st1").textContent=v.label[0];$("st2").textContent=v.label[1];
+  $("st3").textContent="指數 "+Math.max(0,r.total-r.spread)+"–"+Math.min(100,r.total+r.spread);
+  $("vdesc").textContent=v.desc;
+  $("vmeta").textContent="分析範圍:"+r.len+" 字 / "+r.sentCount+" 句 / "+r.paraResults.length+" 段";
+
+  // 人為佐證面板
+  const ev=$("evidence");
+  if(r.unitFound.length&&r.coverage>0){
+    ev.style.display="block";
+    const pct=Math.round(r.coverage*100);
+    $("evtext").textContent=r.deduction>0
+      ?"單位相關詞彙出現於 "+pct+"% 的段落,脈絡連貫,已據此扣減整體指數 "+r.deduction+" 點。"
+      :"偵測到單位相關詞彙,但僅覆蓋 "+pct+"% 的段落,連貫性不足,未予扣減。若單位詞只集中在開頭一段、後文全無,反而值得留意是否為AI底稿前置單位介紹。";
+    $("evchips").innerHTML=r.unitFound.map(w=>'<span class="chip">'+esc(w)+"</span>").join("");
+  }else{ev.style.display="none";}
+
+  // 指標(分類分組)
+  let html="",lastCat="";
+  r.signals.forEach(s=>{
+    if(s.cat!==lastCat){html+='<div class="cat">【'+s.cat+'】</div>';lastCat=s.cat;}
+    const c=riskOf(s.score).c;
+    html+='<div class="sig"><div class="head"><span class="name">'+s.name+
+      '</span><span class="score" style="color:'+c+'">'+s.score+'</span></div>'+
+      '<div class="track"><div class="fill" style="width:'+s.score+'%;background:'+c+'"></div></div>'+
+      '<div class="note">'+s.note+"</div></div>";
+  });
+  $("signals").innerHTML=html;
+
+  $("paras").innerHTML=r.paraResults.map((p,i)=>{
+    const rk=riskOf(p.score);
+    return '<div class="para" style="background:'+rk.bg+';border-left-color:'+rk.c+'">'+
+      '<div class="tag" style="color:'+rk.c+'">第 '+(i+1)+' 段 · AI特徵 '+rk.t+"("+p.score+")"+
+      (p.hasUnit?'<span class="badge">含單位脈絡</span>':"")+"</div>"+
+      '<div class="body">'+highlight(p.text,p.hits,p.uhits)+"</div></div>";
+  }).join("");
+
+  $("results").style.display="block";
+  $("results").scrollIntoView({behavior:"smooth",block:"start"});
+});
+</script>
+</body>
+</html>
