@@ -195,7 +195,7 @@ function analyze(text,unitTerms){
   const connStart=sents.filter(s=>CONNECTORS.some(c=>s.startsWith(c))).length;
   const sConn=clamp(per1k(countM(text,CONNECTORS))*14+connStart/sents.length*160);
   const selfHits=countM(text,SELFREF)+countM(text,unitTerms)*1.5;
-  const sSelf=clamp(72-per1k(selfHits)*11);   // 自稱/單位視角越少,AI特徵越高
+  const sSelf=clamp(72-per1k(selfHits)*6);   // 自稱/單位視角越少,AI特徵越高(2026-07以真實樣本校準:×11→×6)
   const toneHits=countM(text,TONEWORDS)+(text.match(/[!!]/g)||[]).length;
   const sTone=clamp(68-per1k(toneHits)*13);   // 語氣平板無起伏
 
@@ -237,7 +237,9 @@ function analyze(text,unitTerms){
   const unitFound=allUnitWords.filter(w=>text.includes(w));
   let deduction=0;
   if(coverage>=0.25&&unitFound.length){
-    deduction=Math.round(Math.min(16,coverage*22+(unitTerms.filter(w=>text.includes(w)).length?4:0)));
+    // 套話密度越高,單位脈絡的人為佐證可信度越低(防AI底稿置入單位名鑽漏洞)
+    const trust=Math.max(0,1-sBuzz/150);
+    deduction=Math.round(Math.min(16,coverage*22+(unitTerms.filter(w=>text.includes(w)).length?4:0))*trust);
     total-=deduction;
   }
   total=clamp(total);
