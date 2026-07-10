@@ -3,204 +3,224 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#4F46E5">
+<meta name="theme-color" content="#05070D">
 <title>計畫書 AI 使用特徵分析</title>
 <meta name="description" content="貼上計畫書文字,從語氣、架構、用詞三大面向分析AI寫作特徵,並以單位脈絡連貫性作為人為撰寫佐證。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=IBM+Plex+Mono:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    color-scheme: light dark;
-    --bg:#F7F8FC; --surface:#FFFFFF; --surface-2:#F1F3FA;
-    --ink:#0F172A; --muted:#5B6474; --border:#E4E7F0;
-    --primary:#4F46E5; --primary-2:#7C3AED; --primary-soft:#EEF0FF;
-    --success:#047857; --success-bg:#ECFDF5;
-    --amber:#B45309; --amber-bg:#FFFBEB;
-    --orange:#C2410C; --orange-bg:#FFF7ED;
-    --danger:#DC2626; --danger-bg:#FEF2F2;
-    --shadow-card:0 4px 24px rgba(79,70,229,.08),0 1px 3px rgba(15,23,42,.05);
-    --grad:linear-gradient(135deg,var(--primary),var(--primary-2));
+    color-scheme: dark;
+    --bg:#05070D; --surface:#0C111C; --surface-2:#121A29;
+    --ink:#E7EEF6; --muted:#7186A3; --border:#1D2C40;
+    --primary:#22E7FF; --primary-2:#FF2ED1; --primary-soft:rgba(34,231,255,.08);
+    --success:#00FFA3; --success-bg:rgba(0,255,163,.10);
+    --amber:#FFD60A; --amber-bg:rgba(255,214,10,.10);
+    --orange:#FF9F1C; --orange-bg:rgba(255,159,28,.10);
+    --danger:#FF2E63; --danger-bg:rgba(255,46,99,.10);
+    --shadow-card:0 0 0 1px rgba(34,231,255,.10),0 10px 40px rgba(0,0,0,.55);
+    --grad:linear-gradient(120deg,var(--primary),var(--primary-2));
     --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
-    --head:"Lexend","Noto Sans TC",sans-serif;
+    --head:"Orbitron","Noto Sans TC",sans-serif;
     --mono:"IBM Plex Mono",Consolas,monospace;
-    --radius:16px; --radius-sm:10px;
-  }
-  @media (prefers-color-scheme: dark){
-    :root{
-      --bg:#0B1220; --surface:#121B30; --surface-2:#1A2540;
-      --ink:#E7EBF5; --muted:#98A3B8; --border:#26324E;
-      --primary:#818CF8; --primary-2:#A78BFA; --primary-soft:#1E2547;
-      --success:#34D399; --success-bg:#0C2B22;
-      --amber:#FBBF24; --amber-bg:#2B2210;
-      --orange:#FB923C; --orange-bg:#2D1B10;
-      --danger:#F87171; --danger-bg:#2E1516;
-      --shadow-card:0 4px 24px rgba(0,0,0,.35);
-    }
+    --radius:12px; --radius-sm:6px;
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.7;
-    background-image:radial-gradient(circle at 20% -10%,rgba(79,70,229,.07),transparent 40%),
-      radial-gradient(circle at 90% 0%,rgba(124,58,237,.06),transparent 35%)}
-  .wrap{max-width:880px;margin:0 auto;padding:48px 20px 96px}
+    position:relative;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(34,231,255,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(34,231,255,.05) 1px,transparent 1px),
+      radial-gradient(circle at 15% 0%,rgba(34,231,255,.10),transparent 45%),
+      radial-gradient(circle at 90% 15%,rgba(255,46,209,.08),transparent 40%);
+    background-size:42px 42px,42px 42px,100% 100%,100% 100%}
+  body::after{content:"";position:fixed;left:0;right:0;top:-20%;height:35%;z-index:0;pointer-events:none;
+    background:linear-gradient(rgba(34,231,255,0),rgba(34,231,255,.05),rgba(34,231,255,0));
+    animation:scanline 9s linear infinite}
+  @keyframes scanline{0%{transform:translateY(0)}100%{transform:translateY(400%)}}
+  .wrap{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:48px 20px 96px}
   a{color:var(--primary)}
+
+  .hud{position:relative}
+  .hud::before,.hud::after{content:"";position:absolute;width:14px;height:14px;
+    border-color:var(--primary);opacity:.5;pointer-events:none}
+  .hud::before{top:-1px;left:-1px;border-top:2px solid;border-left:2px solid}
+  .hud::after{bottom:-1px;right:-1px;border-bottom:2px solid;border-right:2px solid}
 
   /* ── 頁首 ── */
   header{text-align:center;margin-bottom:40px}
-  .pill{display:inline-flex;align-items:center;gap:7px;font-family:var(--head);
-    font-size:12.5px;font-weight:600;letter-spacing:1.5px;color:var(--primary);
-    background:var(--primary-soft);border:1px solid color-mix(in srgb,var(--primary) 25%,transparent);
-    border-radius:999px;padding:7px 16px;margin-bottom:18px}
-  .pill svg{width:14px;height:14px}
-  h1{font-family:var(--head);font-size:clamp(28px,5vw,40px);font-weight:700;letter-spacing:1px;
-    margin:0 0 12px;line-height:1.25}
+  .pill{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);
+    font-size:12px;font-weight:600;letter-spacing:2px;color:var(--primary);
+    background:var(--primary-soft);border:1px solid rgba(34,231,255,.35);
+    border-radius:var(--radius-sm);padding:7px 16px;margin-bottom:20px;
+    text-shadow:0 0 10px rgba(34,231,255,.5)}
+  .pill svg{width:14px;height:14px;flex-shrink:0}
+  .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--success);
+    box-shadow:0 0 8px var(--success);animation:blink 1.6s ease-in-out infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+  h1{font-family:var(--head);font-size:clamp(26px,5vw,38px);font-weight:900;letter-spacing:1px;
+    margin:0 0 14px;line-height:1.3;filter:drop-shadow(0 0 20px rgba(34,231,255,.18))}
   h1 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .sub{font-size:15.5px;color:var(--muted);max-width:520px;margin:0 auto 20px}
+  .sub{font-size:15.5px;color:var(--muted);max-width:520px;margin:0 auto 22px}
   .trustrow{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
-  .trust{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);
-    background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:5px 13px}
+  .trust{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);
+    font-family:var(--mono);background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-sm);padding:6px 13px}
   .trust svg{width:13px;height:13px;color:var(--success);flex-shrink:0}
 
   /* ── 輸入卡 ── */
   .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
     padding:24px;box-shadow:var(--shadow-card)}
-  .drop{border:2px dashed var(--border);border-radius:var(--radius-sm);padding:26px 16px;text-align:center;
+  .drop{border:1.5px dashed var(--border);border-radius:var(--radius-sm);padding:26px 16px;text-align:center;
     cursor:pointer;margin-bottom:20px;background:var(--surface-2);
     transition:border-color .2s,background .2s,box-shadow .2s}
   .drop:hover,.drop.over{border-color:var(--primary);background:var(--primary-soft);
-    box-shadow:0 0 0 4px color-mix(in srgb,var(--primary) 12%,transparent)}
+    box-shadow:0 0 0 1px rgba(34,231,255,.25),0 0 24px rgba(34,231,255,.12)}
   .drop:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
-  .drop .icon{width:34px;height:34px;color:var(--primary);margin:0 auto 8px;display:block}
+  .drop .icon{width:34px;height:34px;color:var(--primary);margin:0 auto 8px;display:block;
+    filter:drop-shadow(0 0 8px rgba(34,231,255,.5))}
   .drop .big{font-size:15px;font-weight:500}
   .drop .small{font-size:12.5px;color:var(--muted);margin-top:5px}
-  .drop .status{font-size:13px;color:var(--primary);margin-top:8px;font-weight:500;min-height:1em}
+  .drop .status{font-size:13px;color:var(--primary);margin-top:8px;font-weight:500;min-height:1em;font-family:var(--mono)}
   .drop .status.err{color:var(--danger)}
   label{font-size:13.5px;font-weight:500;color:var(--ink);display:block;margin-bottom:8px}
   textarea{width:100%;min-height:210px;resize:vertical;border:1.5px solid var(--border);
     border-radius:var(--radius-sm);padding:14px;font-size:15px;line-height:1.85;
-    font-family:var(--sans);outline:none;background:var(--surface);color:var(--ink);
+    font-family:var(--sans);outline:none;background:var(--surface-2);color:var(--ink);
     transition:border-color .2s,box-shadow .2s}
   textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 70%,transparent)}
   textarea:focus,input[type=text]:focus{border-color:var(--primary);
-    box-shadow:0 0 0 4px color-mix(in srgb,var(--primary) 14%,transparent)}
+    box-shadow:0 0 0 3px rgba(34,231,255,.15),0 0 20px rgba(34,231,255,.08)}
   input[type=text]{width:100%;border:1.5px solid var(--border);border-radius:var(--radius-sm);
     padding:12px 14px;font-size:14px;font-family:var(--sans);outline:none;
-    background:var(--surface);color:var(--ink);transition:border-color .2s,box-shadow .2s}
+    background:var(--surface-2);color:var(--ink);transition:border-color .2s,box-shadow .2s}
   .field{margin-top:18px}
   .fieldnote{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.7}
   .bar{display:flex;align-items:center;gap:14px;margin-top:20px;flex-wrap:wrap}
   button.go{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;
-    background:var(--grad);color:#fff;border:none;border-radius:999px;padding:13px 34px;
-    font-size:15.5px;font-weight:600;letter-spacing:3px;cursor:pointer;font-family:var(--head);
-    min-height:48px;box-shadow:0 4px 14px rgba(79,70,229,.35);
-    transition:transform .15s,box-shadow .2s,opacity .2s}
-  button.go:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(79,70,229,.45)}
+    background:transparent;color:var(--primary);border:1.5px solid var(--primary);
+    clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+    padding:13px 34px;font-size:15px;font-weight:700;letter-spacing:3px;cursor:pointer;
+    font-family:var(--head);min-height:48px;text-shadow:0 0 10px rgba(34,231,255,.5);
+    box-shadow:0 0 16px rgba(34,231,255,.18),inset 0 0 14px rgba(34,231,255,.05);
+    transition:all .2s}
+  button.go:hover:not(:disabled){background:var(--grad);color:#04121A;text-shadow:none;
+    box-shadow:0 0 28px rgba(34,231,255,.4),0 0 28px rgba(255,46,209,.25)}
   button.go:active:not(:disabled){transform:scale(.97)}
-  button.go:disabled{background:var(--border);color:var(--muted);cursor:default;box-shadow:none;letter-spacing:2px}
+  button.go:disabled{border-color:var(--border);color:var(--muted);cursor:default;
+    box-shadow:none;text-shadow:none;letter-spacing:2px}
   button.go:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   button.go svg{width:16px;height:16px}
-  button.go .spin{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.35);
-    border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite}
+  button.go .spin{display:none;width:16px;height:16px;border:2px solid rgba(34,231,255,.25);
+    border-top-color:currentColor;border-radius:50%;animation:rot .7s linear infinite}
   button.go.loading .spin{display:inline-block}
   button.go.loading .arrow{display:none}
   @keyframes rot{to{transform:rotate(360deg)}}
   .count{font-size:13px;color:var(--muted);font-family:var(--mono)}
   .clear{background:none;border:none;color:var(--muted);font-size:13.5px;cursor:pointer;
-    text-decoration:underline;padding:8px;min-height:44px}
+    text-decoration:underline;padding:8px;min-height:44px;font-family:var(--mono)}
   .clear:hover{color:var(--ink)}
-  .scanbar{height:3px;border-radius:3px;margin-top:18px;overflow:hidden;background:var(--surface-2);display:none}
+  .scanbar{height:3px;border-radius:2px;margin-top:18px;overflow:hidden;background:var(--surface-2);display:none}
   .scanbar.on{display:block}
-  .scanbar i{display:block;height:100%;width:35%;border-radius:3px;background:var(--grad);
-    animation:scan 1s ease-in-out infinite}
+  .scanbar i{display:block;height:100%;width:35%;border-radius:2px;background:var(--grad);
+    box-shadow:0 0 10px rgba(34,231,255,.6);animation:scan 1s ease-in-out infinite}
   @keyframes scan{0%{transform:translateX(-110%)}100%{transform:translateX(320%)}}
 
   .warn{margin-top:22px;color:var(--danger);font-size:14px;background:var(--danger-bg);
-    border:1px solid color-mix(in srgb,var(--danger) 30%,transparent);
-    border-radius:var(--radius-sm);padding:12px 16px}
+    border:1px solid rgba(255,46,99,.35);border-radius:var(--radius-sm);padding:12px 16px;
+    font-family:var(--mono)}
 
   /* ── 判定區 ── */
   .verdict{display:flex;gap:26px;margin-top:44px;align-items:center;flex-wrap:wrap}
-  .stamp{width:138px;height:138px;flex-shrink:0;transform:rotate(-4deg);border-radius:22px;
+  .stamp{width:138px;height:138px;flex-shrink:0;border-radius:var(--radius);
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     font-family:var(--head);background:var(--surface);position:relative;
-    box-shadow:var(--shadow-card)}
-  .stamp .t1{font-size:13.5px;font-weight:600;letter-spacing:3px;font-family:var(--sans)}
-  .stamp .t2{font-size:34px;font-weight:900;letter-spacing:2px;margin:1px 0;font-family:var(--sans)}
-  .stamp .t3{font-size:12.5px;letter-spacing:.5px;font-family:var(--mono)}
+    box-shadow:var(--shadow-card);animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:var(--shadow-card)}50%{box-shadow:0 0 0 1px currentColor,0 0 30px currentColor}}
+  .stamp .t1{font-size:12px;font-weight:600;letter-spacing:3px;font-family:var(--mono);opacity:.85}
+  .stamp .t2{font-size:32px;font-weight:900;letter-spacing:2px;margin:2px 0;font-family:var(--sans);
+    text-shadow:0 0 16px currentColor}
+  .stamp .t3{font-size:12px;letter-spacing:.5px;font-family:var(--mono);opacity:.85}
   .vdesc{flex:1;min-width:250px}
   .vdesc p{font-size:15.5px;line-height:1.9;margin:0 0 12px}
   .vmeta{display:flex;gap:8px;flex-wrap:wrap}
-  .chipm{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--muted);
-    background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:4px 12px;
-    font-family:var(--mono)}
+  .chipm{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);
+    padding:4px 12px;font-family:var(--mono)}
 
-  h2{font-family:var(--head);font-size:19px;font-weight:600;display:flex;align-items:center;gap:10px;
-    margin:44px 0 18px;letter-spacing:.5px}
-  h2::before{content:"";width:5px;height:22px;border-radius:3px;background:var(--grad);flex-shrink:0}
-  .hint{font-size:13px;color:var(--muted);margin:-10px 0 16px}
+  h2{font-family:var(--head);font-size:17px;font-weight:700;display:flex;align-items:center;gap:10px;
+    margin:44px 0 18px;letter-spacing:1px}
+  h2::before{content:"";width:5px;height:20px;border-radius:2px;background:var(--grad);flex-shrink:0;
+    box-shadow:0 0 10px rgba(34,231,255,.4)}
+  .hint{font-size:13px;color:var(--muted);margin:-10px 0 16px;font-family:var(--mono)}
 
   /* ── 佐證面板 ── */
-  .evidence{border:1px solid color-mix(in srgb,var(--primary) 25%,transparent);
-    border-left:4px solid var(--primary);background:var(--primary-soft);
-    border-radius:var(--radius-sm);padding:16px 18px;margin-top:20px}
-  .evidence .h{display:flex;align-items:center;gap:8px;font-family:var(--head);font-weight:600;
-    color:var(--primary);font-size:15px;margin-bottom:7px}
+  .evidence{border:1px solid rgba(34,231,255,.3);border-left:3px solid var(--primary);
+    background:var(--primary-soft);border-radius:var(--radius-sm);padding:16px 18px;margin-top:20px}
+  .evidence .h{display:flex;align-items:center;gap:8px;font-family:var(--head);font-weight:700;
+    color:var(--primary);font-size:14px;margin-bottom:7px;letter-spacing:.5px}
   .evidence .h svg{width:17px;height:17px;flex-shrink:0}
   .evidence p{font-size:13.5px;line-height:1.9;margin:0}
-  .chip{display:inline-block;background:var(--surface);color:var(--primary);border-radius:6px;
-    border:1px solid color-mix(in srgb,var(--primary) 30%,transparent);
-    padding:2px 10px;font-size:12.5px;margin:3px 5px 0 0}
+  .chip{display:inline-block;background:var(--surface);color:var(--primary);border-radius:var(--radius-sm);
+    border:1px solid rgba(34,231,255,.3);padding:2px 10px;font-size:12px;margin:3px 5px 0 0;
+    font-family:var(--mono)}
 
   /* ── 指標 ── */
-  .cat{font-family:var(--head);font-size:14px;font-weight:600;letter-spacing:2px;color:var(--muted);
+  .cat{font-family:var(--head);font-size:13px;font-weight:700;letter-spacing:3px;color:var(--muted);
     margin:24px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--border);
     display:flex;align-items:center;gap:7px}
   .sig{margin-bottom:15px;animation:rise .45s ease-out both;animation-delay:calc(var(--i,0)*45ms)}
   @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   .sig .head{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;margin-bottom:5px}
   .sig .name{font-weight:500}
-  .sig .score{font-weight:600;font-family:var(--mono);font-size:15px}
-  .track{height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden}
-  .fill{height:100%;border-radius:4px;transform-origin:left;
+  .sig .score{font-weight:700;font-family:var(--mono);font-size:15px}
+  .track{height:7px;background:var(--surface-2);border-radius:3px;overflow:hidden;
+    border:1px solid var(--border)}
+  .fill{height:100%;border-radius:2px;transform-origin:left;
     animation:grow .6s cubic-bezier(.2,.7,.3,1) both;animation-delay:calc(var(--i,0)*45ms + 120ms)}
   @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
   .sig .note{font-size:12.5px;color:var(--muted);margin-top:4px}
 
   /* ── 逐段 ── */
-  .para{border-left:4px solid;border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  .para{border:1px solid;border-left-width:3px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;
     padding:12px 16px;margin-bottom:12px;animation:rise .45s ease-out both}
-  .para .tag{font-size:12.5px;font-weight:600;margin-bottom:5px;display:flex;gap:8px;
-    flex-wrap:wrap;align-items:center;font-family:var(--mono)}
-  .badge{font-size:11.5px;font-weight:600;color:var(--primary);background:var(--primary-soft);
-    border:1px solid color-mix(in srgb,var(--primary) 25%,transparent);
-    border-radius:999px;padding:1px 9px;font-family:var(--sans)}
+  .para .tag{font-size:12px;font-weight:700;margin-bottom:5px;display:flex;gap:8px;
+    flex-wrap:wrap;align-items:center;font-family:var(--mono);letter-spacing:.5px}
+  .badge{font-size:11px;font-weight:700;color:var(--primary);background:var(--primary-soft);
+    border:1px solid rgba(34,231,255,.3);border-radius:var(--radius-sm);padding:1px 9px;
+    font-family:var(--mono)}
   .para .body{font-size:14.5px;line-height:1.95}
-  mark{background:color-mix(in srgb,var(--danger) 16%,transparent);color:var(--danger);
-    padding:0 3px;border-radius:3px;font-weight:500}
-  mark.unit{background:color-mix(in srgb,var(--primary) 14%,transparent);color:var(--primary)}
+  mark{background:color-mix(in srgb,var(--danger) 20%,transparent);color:var(--danger);
+    padding:0 3px;border-radius:2px;font-weight:600}
+  mark.unit{background:color-mix(in srgb,var(--primary) 18%,transparent);color:var(--primary)}
 
   /* ── 附註 ── */
-  .notice{margin-top:40px;border:1px solid color-mix(in srgb,var(--amber) 35%,transparent);
-    border-left:4px solid var(--amber);border-radius:var(--radius-sm);
-    padding:16px 18px;background:var(--amber-bg)}
-  .notice .h{display:flex;align-items:center;gap:8px;font-family:var(--head);font-weight:600;
-    color:var(--amber);margin-bottom:7px;font-size:15px}
+  .notice{margin-top:40px;border:1px solid rgba(255,214,10,.35);border-left:3px solid var(--amber);
+    border-radius:var(--radius-sm);padding:16px 18px;background:var(--amber-bg)}
+  .notice .h{display:flex;align-items:center;gap:8px;font-family:var(--head);font-weight:700;
+    color:var(--amber);margin-bottom:7px;font-size:14px;letter-spacing:.5px}
   .notice .h svg{width:17px;height:17px;flex-shrink:0}
   .notice p{font-size:13.5px;line-height:2;margin:0}
 
-  footer{margin-top:56px;text-align:center;font-size:12.5px;color:var(--muted)}
+  footer{margin-top:56px;text-align:center;font-size:12px;color:var(--muted);font-family:var(--mono)}
   footer .lock{display:inline-flex;align-items:center;gap:6px}
   footer svg{width:13px;height:13px;color:var(--success)}
   #results{display:none}
   @media (prefers-reduced-motion:reduce){
     *{animation-duration:.01ms !important;animation-delay:0ms !important;transition-duration:.01ms !important}
     .scanbar i{animation:none;width:100%}
+    body::after{display:none}
+    .stamp{animation:none}
+    .pill .dot{animation:none}
   }
   @media (max-width:480px){
     .wrap{padding:32px 14px 72px}
     .card{padding:18px}
     .verdict{gap:18px}
+    body::before{background-size:28px 28px,28px 28px,100% 100%,100% 100%}
   }
 </style>
 </head>
@@ -208,19 +228,19 @@
 <div class="wrap">
   <header>
     <div class="pill">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3m0 12v3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1M3 12h3m12 0h3M5.6 18.4l2.1-2.1m8.6-8.6 2.1-2.1"/></svg>
-      審查輔助工具
+      <span class="dot" aria-hidden="true"></span>
+      SYSTEM SCAN · 審查輔助工具
     </div>
     <h1>計畫書 <span class="grad">AI 使用特徵</span>分析</h1>
     <p class="sub">從語氣、架構、用詞三大面向檢測生成式寫作痕跡,並以單位脈絡連貫性作為人為撰寫佐證。</p>
     <div class="trustrow">
-      <span class="trust"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>瀏覽器本機運算,文字不上傳</span>
-      <span class="trust"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>經真實樣本校準</span>
-      <span class="trust"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>免安裝・免註冊</span>
+      <span class="trust"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>// 本機運算,資料不上傳</span>
+      <span class="trust"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>// 經真實樣本校準</span>
+      <span class="trust"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>// 免安裝・免註冊</span>
     </div>
   </header>
 
-  <section class="card">
+  <section class="card hud">
     <div class="drop" id="drop" role="button" tabindex="0" aria-label="上傳文件檔案">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.2"/><path d="M12 12v9"/><path d="m8 17 4-4 4 4"/></svg>
       <div class="big">拖曳檔案到這裡,或點擊選擇檔案</div>
@@ -251,7 +271,7 @@
 
   <div id="results">
     <section class="verdict">
-      <div class="stamp" id="stamp">
+      <div class="stamp hud" id="stamp">
         <div class="t1" id="st1"></div><div class="t2" id="st2"></div><div class="t3" id="st3"></div>
       </div>
       <div class="vdesc"><p id="vdesc"></p><div class="vmeta" id="vmeta"></div></div>
@@ -267,7 +287,7 @@
     <div id="signals"></div>
 
     <h2>逐段風險標記</h2>
-    <p class="hint">紅色為AI典型用語,藍紫色為單位脈絡詞(人為佐證)。含單位脈絡的段落已自動降低風險評分。</p>
+    <p class="hint">// 紅色為AI典型用語,藍紫色為單位脈絡詞(人為佐證)。含單位脈絡的段落已自動降低風險評分。</p>
     <div id="paras"></div>
 
     <section class="notice">
@@ -511,7 +531,7 @@ function renderResults(){
   $("tooShort").style.display="none";
   const v=verdictOf(r.total);
   const stamp=$("stamp");
-  stamp.style.border="3px solid "+v.tone;stamp.style.color=v.tone;stamp.style.background=v.bg;
+  stamp.style.border="2px solid "+v.tone;stamp.style.color=v.tone;stamp.style.background=v.bg;
   $("st1").textContent=v.label[0];$("st2").textContent=v.label[1];
   $("st3").textContent="指數 "+Math.max(0,r.total-r.spread)+"–"+Math.min(100,r.total+r.spread);
   $("vdesc").textContent=v.desc;
@@ -536,7 +556,7 @@ function renderResults(){
     const c=riskOf(s.score).c;
     html+='<div class="sig" style="--i:'+idx+'"><div class="head"><span class="name">'+s.name+
       '</span><span class="score" style="color:'+c+'">'+s.score+'</span></div>'+
-      '<div class="track"><div class="fill" style="--i:'+idx+';width:'+s.score+'%;background:'+c+'"></div></div>'+
+      '<div class="track"><div class="fill" style="--i:'+idx+';width:'+s.score+'%;background:'+c+';box-shadow:0 0 8px '+c+'"></div></div>'+
       '<div class="note">'+s.note+"</div></div>";
     idx++;
   });
@@ -544,7 +564,7 @@ function renderResults(){
 
   $("paras").innerHTML=r.paraResults.map((p,i)=>{
     const rk=riskOf(p.score);
-    return '<div class="para" style="background:'+rk.bg+';border-left-color:'+rk.c+';animation-delay:'+Math.min(i*40,400)+'ms">'+
+    return '<div class="para" style="background:'+rk.bg+';border-color:'+rk.c+';animation-delay:'+Math.min(i*40,400)+'ms">'+
       '<div class="tag" style="color:'+rk.c+'">第 '+(i+1)+' 段 · AI特徵 '+rk.t+"("+p.score+")"+
       (p.hasUnit?'<span class="badge">含單位脈絡</span>':"")+"</div>"+
       '<div class="body">'+highlight(p.text,p.hits,p.uhits)+"</div></div>";
