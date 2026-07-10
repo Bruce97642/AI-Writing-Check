@@ -205,7 +205,34 @@
   .notice .h svg{width:17px;height:17px;flex-shrink:0}
   .notice p{font-size:13.5px;line-height:2;margin:0}
 
+  /* ── 服務區 ── */
+  .svc{margin-top:40px;border:1px solid rgba(34,231,255,.3);border-radius:var(--radius);
+    padding:24px;background:var(--surface);box-shadow:var(--shadow-card)}
+  .svc .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--primary);
+    margin-bottom:8px}
+  .svc h3{font-family:var(--head);font-size:19px;font-weight:700;margin:0 0 10px;letter-spacing:.5px}
+  .svc>p{font-size:14.5px;line-height:1.9;margin:0 0 18px;color:var(--ink)}
+  .svc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:20px}
+  .svc-card{border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;
+    background:var(--surface-2)}
+  .svc-card .p{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--primary);
+    text-shadow:0 0 12px rgba(34,231,255,.35)}
+  .svc-card .p span{font-size:13px;font-weight:500;color:var(--muted);text-shadow:none}
+  .svc-card .n{font-size:15px;font-weight:700;margin:6px 0 8px}
+  .svc-card .d{font-size:13px;color:var(--muted);line-height:1.8}
+  .svc-btn{display:inline-flex;align-items:center;gap:8px;background:var(--primary);color:#04121A;
+    border:none;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+    padding:13px 30px;font-size:15px;font-weight:700;letter-spacing:2px;cursor:pointer;
+    font-family:var(--head);text-decoration:none;min-height:48px;
+    box-shadow:0 0 20px rgba(34,231,255,.35);transition:box-shadow .2s,transform .15s}
+  .svc-btn:hover{box-shadow:0 0 32px rgba(34,231,255,.55);transform:translateY(-1px)}
+  .svc-btn:active{transform:scale(.97)}
+  .svc-btn svg{width:17px;height:17px}
+  .svc-note{font-size:12.5px;color:var(--muted);margin:14px 0 0;font-family:var(--mono)}
   footer{margin-top:56px;text-align:center;font-size:12px;color:var(--muted);font-family:var(--mono)}
+  footer .svclink{display:block;margin-bottom:10px}
+  footer .svclink a{color:var(--primary);text-decoration:none}
+  footer .svclink a:hover{text-decoration:underline}
   footer .lock{display:inline-flex;align-items:center;gap:6px}
   footer svg{width:13px;height:13px;color:var(--success)}
   #results{display:none}
@@ -297,9 +324,33 @@
       單位脈絡連貫僅代表撰寫者熟悉該單位,不排除以AI為底稿再置入單位資訊的情形。
       指數偏高時,建議以「要求補充具體事證、口頭答詢、追問執行細節」作為後續查證方式,不宜僅憑指數逕行認定。</p>
     </section>
+
+    <section class="svc">
+      <div class="eyebrow">// NEXT STEP</div>
+      <h3>指數偏高,不知道怎麼修?</h3>
+      <p>我幫協會寫過多份核定補助案。「計畫書健檢」提供 AI+人工雙層審查,逐段指出問題與修改方向,讓你的計畫書有人味、有事證、答詢問不倒。</p>
+      <div class="svc-grid">
+        <div class="svc-card">
+          <div class="p">NT$2,000<span>/份</span></div>
+          <div class="n">計畫書健檢</div>
+          <div class="d">AI+人工雙層審查<br>逐段修改建議報告<br>48 小時內交付</div>
+        </div>
+        <div class="svc-card">
+          <div class="p">NT$6,000<span> 起</span></div>
+          <div class="n">修訂到能送件</div>
+          <div class="d">含健檢全部內容<br>直接改到可送件為止<br>依頁數議價</div>
+        </div>
+      </div>
+      <a class="svc-btn" href="https://line.me/ti/p/2uOzs293hw" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.5-.76L3 21l1.76-6A8.5 8.5 0 1 1 21 11.5z"/></svg>
+        LINE 聯絡我
+      </a>
+      <p class="svc-note">// 本工具永久免費。檢測評分與是否購買服務完全無關。</p>
+    </section>
   </div>
 
   <footer>
+    <span class="svclink"><a href="https://line.me/ti/p/2uOzs293hw" target="_blank" rel="noopener">需要人工協助?計畫書健檢 NT$2,000 起 →</a></span>
     <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>本工具於瀏覽器本機運算,貼上的文字不會上傳到任何伺服器。</span>
   </footer>
 </div>
