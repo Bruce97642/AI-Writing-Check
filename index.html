@@ -9,6 +9,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=IBM+Plex+Mono:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+// Vercel 流量統計(僅計造訪次數,不涉及使用者貼上的內容);github.io 備援站不載入
+if(location.hostname.endsWith("vercel.app")){
+  var vs=document.createElement("script");vs.defer=true;vs.src="/_vercel/insights/script.js";
+  document.head.appendChild(vs);
+}
+</script>
 <style>
   :root{
     color-scheme: dark;
@@ -351,7 +358,7 @@
 
   <footer>
     <span class="svclink"><a href="https://line.me/ti/p/2uOzs293hw" target="_blank" rel="noopener">需要人工協助?計畫書健檢 NT$2,000 起 →</a></span>
-    <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>本工具於瀏覽器本機運算,貼上的文字不會上傳到任何伺服器。</span>
+    <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>本工具於瀏覽器本機運算,貼上的文字不會上傳到任何伺服器;網站僅統計造訪次數。</span>
   </footer>
 </div>
 
